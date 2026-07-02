@@ -317,6 +317,8 @@ The admin UI contains placeholder links for HayVon builds. Replace the
 `href="#"` values in `public/index.html` with your public download pages when
 you publish the app links. HayVon can also connect to a JamanWG panel by panel
 URL and API token, then load the issued WireGuard and AmneziaWG client entries.
+The Settings page can copy or open a HayVon panel connection for the current
+panel using the visible API token.
 
 ## Security notes
 

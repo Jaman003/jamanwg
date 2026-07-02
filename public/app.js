@@ -93,6 +93,8 @@ const el = {
   apiTokenOutput: document.querySelector('#apiTokenOutput'),
   copyApiTokenButton: document.querySelector('#copyApiTokenButton'),
   regenerateApiTokenButton: document.querySelector('#regenerateApiTokenButton'),
+  copyHayVonPanelButton: document.querySelector('#copyHayVonPanelButton'),
+  openHayVonPanelButton: document.querySelector('#openHayVonPanelButton'),
   restartButton: document.querySelector('#restartButton'),
   logoutButton: document.querySelector('#logoutButton'),
   themeButton: document.querySelector('#themeButton'),
@@ -294,6 +296,8 @@ const translations = {
     'settings.regenerate': 'Перегенерировать',
     'settings.compat_app': 'Совместимое приложение',
     'settings.compat_desc': 'HayVon может подключаться к jamanWG по URL панели и API token, чтобы загрузить созданные клиентские конфигурации.',
+    'settings.hayvon_copy': 'Скопировать подключение',
+    'settings.hayvon_open': 'Открыть HayVon',
     'settings.admin_login': 'Логин администратора',
     'settings.current_password': 'Текущий пароль',
     'settings.current_password_placeholder': 'Нужен для смены логина/пароля',
@@ -335,6 +339,8 @@ const translations = {
     'toast.settings_saved': 'Настройки сохранены',
     'toast.api_copied': 'API token скопирован',
     'toast.api_updated': 'API token обновлен',
+    'toast.hayvon_panel_copied': 'Подключение HayVon скопировано',
+    'toast.hayvon_panel_opening': 'Открываем HayVon',
     'toast.restart_started': 'Перезапуск запущен',
     'toast.data_refreshed': 'Данные обновлены',
     'toast.synced': 'Интерфейс синхронизирован',
@@ -524,6 +530,8 @@ const translations = {
     'settings.regenerate': 'Regenerate',
     'settings.compat_app': 'Compatible app',
     'settings.compat_desc': 'HayVon can connect to jamanWG by panel URL and API token, then load created client configurations.',
+    'settings.hayvon_copy': 'Copy connection',
+    'settings.hayvon_open': 'Open HayVon',
     'settings.admin_login': 'Admin username',
     'settings.current_password': 'Current password',
     'settings.current_password_placeholder': 'Required to change login/password',
@@ -565,6 +573,8 @@ const translations = {
     'toast.settings_saved': 'Settings saved',
     'toast.api_copied': 'API token copied',
     'toast.api_updated': 'API token updated',
+    'toast.hayvon_panel_copied': 'HayVon connection copied',
+    'toast.hayvon_panel_opening': 'Opening HayVon',
     'toast.restart_started': 'Restart started',
     'toast.data_refreshed': 'Data refreshed',
     'toast.synced': 'Interface synced',
@@ -754,6 +764,8 @@ const translations = {
     'settings.regenerate': 'ساخت دوباره',
     'settings.compat_app': 'اپلیکیشن سازگار',
     'settings.compat_desc': 'HayVon می تواند با URL پنل و API token به jamanWG وصل شود و کانفیگ های کاربران را بارگیری کند.',
+    'settings.hayvon_copy': 'کپی اتصال',
+    'settings.hayvon_open': 'باز کردن HayVon',
     'settings.admin_login': 'نام کاربری مدیر',
     'settings.current_password': 'رمز عبور فعلی',
     'settings.current_password_placeholder': 'برای تغییر نام کاربری یا رمز عبور لازم است',
@@ -795,6 +807,8 @@ const translations = {
     'toast.settings_saved': 'تنظیمات ذخیره شد',
     'toast.api_copied': 'API token کپی شد',
     'toast.api_updated': 'API token به روز شد',
+    'toast.hayvon_panel_copied': 'اتصال HayVon کپی شد',
+    'toast.hayvon_panel_opening': 'در حال باز کردن HayVon',
     'toast.restart_started': 'راه اندازی دوباره شروع شد',
     'toast.data_refreshed': 'داده ها به روز شدند',
     'toast.synced': 'اینترفیس همگام شد',
@@ -984,6 +998,8 @@ const translations = {
     'settings.regenerate': '重新生成',
     'settings.compat_app': '兼容应用',
     'settings.compat_desc': 'HayVon 可以通过面板 URL 和 API token 连接 jamanWG，并加载已创建的客户端配置。',
+    'settings.hayvon_copy': '复制连接',
+    'settings.hayvon_open': '打开 HayVon',
     'settings.admin_login': '管理员用户名',
     'settings.current_password': '当前密码',
     'settings.current_password_placeholder': '修改登录名/密码时需要',
@@ -1025,6 +1041,8 @@ const translations = {
     'toast.settings_saved': '设置已保存',
     'toast.api_copied': 'API token 已复制',
     'toast.api_updated': 'API token 已更新',
+    'toast.hayvon_panel_copied': 'HayVon 连接已复制',
+    'toast.hayvon_panel_opening': '正在打开 HayVon',
     'toast.restart_started': '已开始重启',
     'toast.data_refreshed': '数据已刷新',
     'toast.synced': '接口已同步',
@@ -1572,6 +1590,15 @@ function buildAmneziaLink(configText, client) {
 
 function buildHayVonImportUrl(appLink) {
   return `hayvonapp://import?url=${encodeURIComponent(appLink)}`;
+}
+
+function buildHayVonPanelConnectionUrl() {
+  const token = String(el.apiTokenOutput?.value || '').trim();
+  const params = new URLSearchParams({
+    url: window.location.origin,
+    token
+  });
+  return buildHayVonImportUrl(`jamanwg-panel://connect?${params.toString()}`);
 }
 
 async function fetchClientConfig(id) {
@@ -2238,6 +2265,16 @@ el.settingsForm.addEventListener('submit', async (event) => {
 el.copyApiTokenButton.addEventListener('click', async () => {
   await writeClipboard(el.apiTokenOutput.value);
   showToast(t('toast.api_copied'));
+});
+
+el.copyHayVonPanelButton.addEventListener('click', async () => {
+  await writeClipboard(buildHayVonPanelConnectionUrl());
+  showToast(t('toast.hayvon_panel_copied'));
+});
+
+el.openHayVonPanelButton.addEventListener('click', () => {
+  window.location.href = buildHayVonPanelConnectionUrl();
+  showToast(t('toast.hayvon_panel_opening'));
 });
 
 el.regenerateApiTokenButton.addEventListener('click', async () => {

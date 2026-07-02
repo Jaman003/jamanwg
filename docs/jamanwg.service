@@ -1,0 +1,17 @@
+[Unit]
+Description=jamanWG AmneziaWG Panel
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/jamanwg
+EnvironmentFile=/opt/jamanwg/.env
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=3
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

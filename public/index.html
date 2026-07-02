@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>jamanWG</title>
+    <link rel="stylesheet" href="/styles.css?v=20260530-1">
+  </head>
+  <body>
+    <main id="loginView" class="login-view" hidden>
+      <form id="loginForm" class="login-panel">
+        <div class="login-lang-row">
+          <label class="compact-select">
+            <span data-i18n="common.language">Язык</span>
+            <select id="loginLanguageSelect" aria-label="Language">
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+              <option value="fa">فارسی</option>
+              <option value="zh">中文</option>
+            </select>
+          </label>
+        </div>
+        <div class="brand-block">
+          <img class="brand-logo large" src="/assets/app_logo.jpg" alt="jamanWG">
+          <div>
+            <p class="eyebrow">jamanWG</p>
+            <h1 data-i18n="login.title">Панель AmneziaWG</h1>
+          </div>
+        </div>
+        <label>
+          <span data-i18n="login.username">Логин</span>
+          <input name="username" autocomplete="username" value="admin" required>
+        </label>
+        <label>
+          <span data-i18n="login.password">Пароль</span>
+          <input name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="primary" type="submit"><span data-i18n="login.sign_in">Войти</span></button>
+        <p id="loginError" class="form-error" hidden></p>
+      </form>
+    </main>
+
+    <main id="appView" class="app-shell" hidden>
+      <header class="topbar">
+        <div class="brand-block">
+          <img class="brand-logo" src="/assets/app_logo.jpg" alt="jamanWG">
+          <div>
+            <p class="eyebrow">jamanWG</p>
+            <h1 id="pageTitle" data-i18n="nav.clients">Клиенты</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <label class="compact-select top-language">
+            <span data-i18n="common.language">Язык</span>
+            <select id="appLanguageSelect" aria-label="Language">
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+              <option value="fa">فارسی</option>
+              <option value="zh">中文</option>
+            </select>
+          </label>
+          <button id="themeButton" class="glass icon-only" type="button" aria-label="Переключить тему" title="Переключить тему">
+            <span class="icon" data-icon="moon"></span>
+          </button>
+          <button id="syncButton" class="ghost" type="button"><span class="icon" data-icon="sync"></span><span data-i18n="actions.sync">Синхронизировать</span></button>
+          <a class="ghost link-button" href="/api/server-config"><span class="icon" data-icon="download"></span><span data-i18n="actions.server_config">Серверный конфиг</span></a>
+          <button id="logoutButton" class="danger ghost" type="button"><span class="icon" data-icon="logout"></span><span data-i18n="actions.logout">Выйти</span></button>
+        </div>
+      </header>
+
+      <nav class="page-tabs" aria-label="Main navigation">
+        <button class="page-tab active" type="button" data-page="clients"><span class="icon" data-icon="shield"></span><span data-i18n="nav.clients">Клиенты</span></button>
+        <button class="page-tab" type="button" data-page="endpoints"><span class="icon" data-icon="sync"></span><span data-i18n="nav.endpoints">Endpoints</span></button>
+        <button class="page-tab" type="button" data-page="balancer"><span class="icon" data-icon="scale"></span><span data-i18n="nav.balancer">Балансировка</span></button>
+        <button class="page-tab" type="button" data-page="events"><span class="icon" data-icon="config"></span><span data-i18n="nav.events">Журнал</span></button>
+        <button class="page-tab" type="button" data-page="settings"><span class="icon" data-icon="settings"></span><span data-i18n="nav.settings">Настройки</span></button>
+      </nav>
+
+      <section class="page-view active" data-page-view="clients">
+        <section class="status-grid" aria-label="Статус сервера">
+          <div class="metric">
+            <span data-i18n="status.mode">Режим</span>
+            <strong id="modeMetric">-</strong>
+          </div>
+          <div class="metric">
+            <span data-i18n="status.interface">Интерфейс</span>
+            <strong id="ifaceMetric">-</strong>
+          </div>
+          <div class="metric">
+            <span>Endpoint</span>
+            <strong id="endpointMetric">-</strong>
+          </div>
+          <div class="metric">
+            <span data-i18n="status.clients">Клиенты</span>
+            <strong id="clientsMetric">0</strong>
+          </div>
+          <div class="metric">
+            <span data-i18n="status.online">Онлайн</span>
+            <strong id="onlineMetric">0/0</strong>
+          </div>
+          <div class="metric">
+            <span data-i18n="status.address_pool">Слоты IP</span>
+            <strong id="addressPoolMetric">-</strong>
+          </div>
+        </section>
+
+        <section class="panel monitor-panel" aria-label="Server report">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="monitor.title">Отчет сервера</h2>
+              <p class="muted panel-subtitle" data-i18n="monitor.subtitle">Нагрузка, память, диск и общий трафик AmneziaWG.</p>
+            </div>
+          </div>
+          <div id="monitorGrid" class="monitor-grid"></div>
+        </section>
+
+        <section class="panel traffic-panel" aria-label="Traffic analytics">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="traffic.title">Аналитика трафика</h2>
+              <p class="muted panel-subtitle" data-i18n="traffic.subtitle">История расхода и топ клиентов по трафику.</p>
+            </div>
+            <div class="client-tools">
+              <select id="trafficPeriodSelect" aria-label="Traffic period">
+                <option value="daily" data-i18n="traffic.daily">По дням</option>
+                <option value="monthly" data-i18n="traffic.monthly">По месяцам</option>
+              </select>
+              <button id="trafficRefreshButton" class="ghost small" type="button"><span class="icon" data-icon="refresh"></span><span data-i18n="actions.refresh">Обновить</span></button>
+            </div>
+          </div>
+          <div class="traffic-grid">
+            <div>
+              <h3 data-i18n="traffic.history">История</h3>
+              <div id="trafficHistoryList" class="traffic-list"></div>
+            </div>
+            <div>
+              <h3 data-i18n="traffic.top_clients">Топ клиентов</h3>
+              <div id="trafficTopClients" class="traffic-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="workspace">
+          <form id="clientForm" class="panel form-panel">
+            <div class="panel-head">
+              <h2 data-i18n="clients.new_client">Новый клиент</h2>
+              <span class="pill">Peer</span>
+            </div>
+            <label>
+              <span data-i18n="clients.name">Имя</span>
+              <input name="name" data-i18n-placeholder="clients.name_placeholder" placeholder="iPhone клиента" required maxlength="80">
+            </label>
+            <label>
+              <span data-i18n="clients.email">Email или ID</span>
+              <input name="email" placeholder="user@example.com" maxlength="120">
+            </label>
+            <div class="split">
+              <label>
+                <span data-i18n="clients.days">Дней</span>
+                <input name="days" type="number" min="1" step="1" placeholder="30">
+              </label>
+              <label>
+                <span data-i18n="clients.traffic_limit">Лимит, GB</span>
+                <input name="trafficGb" type="number" min="0" step="1" placeholder="100">
+              </label>
+            </div>
+            <label>
+              <span data-i18n="clients.hwid_limit">HWID лимит устройств</span>
+              <input name="deviceLimit" type="number" min="0" max="100" step="1" value="1">
+            </label>
+            <label>
+              <span>AllowedIPs</span>
+              <input name="allowedIps" value="0.0.0.0/0" required>
+            </label>
+            <label>
+              <span>DNS</span>
+              <input name="dns" placeholder="1.1.1.1" required>
+            </label>
+            <label>
+              <span>Endpoint</span>
+              <input name="endpoint" placeholder="vpn.example.com:51820" required>
+            </label>
+            <button class="primary" type="submit"><span data-i18n="clients.create">Создать клиента</span></button>
+            <p id="formError" class="form-error" hidden></p>
+          </form>
+
+          <section class="panel clients-panel">
+            <div class="panel-head">
+              <div>
+                <h2 data-i18n="clients.list">Список клиентов</h2>
+                <p id="clientCountLabel" class="muted panel-subtitle">Показаны все клиенты</p>
+              </div>
+              <div class="client-tools">
+                <label class="search-field">
+                  <span class="icon" data-icon="search"></span>
+                  <input id="clientSearchInput" type="search" data-i18n-placeholder="clients.search_placeholder" placeholder="Поиск: имя, email, id, ключ, IP">
+                </label>
+                <select id="clientStatusFilter" aria-label="Фильтр статуса">
+                  <option value="all" data-i18n="filters.all">Все</option>
+                  <option value="enabled" data-i18n="filters.enabled">Активные</option>
+                  <option value="disabled" data-i18n="filters.disabled">Отключенные</option>
+                  <option value="online" data-i18n="filters.online">С handshake</option>
+                </select>
+                <select id="clientPageSizeSelect" aria-label="Клиентов на странице">
+                  <option value="40">40</option>
+                  <option value="50" selected>50</option>
+                  <option value="100">100</option>
+                </select>
+                <button id="clearClientFilterButton" class="ghost small" type="button"><span class="icon" data-icon="close"></span><span data-i18n="actions.reset">Сброс</span></button>
+                <button id="refreshButton" class="ghost small" type="button"><span class="icon" data-icon="refresh"></span><span data-i18n="actions.refresh">Обновить</span></button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th data-i18n="table.client">Клиент</th>
+                    <th data-i18n="table.address">Адрес</th>
+                    <th data-i18n="table.status">Статус</th>
+                    <th data-i18n="table.traffic">Трафик</th>
+                    <th>Handshake</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="clientsBody"></tbody>
+              </table>
+            </div>
+            <div id="emptyState" class="empty-state" hidden>Клиенты пока не созданы.</div>
+            <div id="clientPagination" class="pagination-bar" hidden>
+              <button id="clientPrevPageButton" class="ghost small" type="button" data-i18n="pagination.prev">Назад</button>
+              <span id="clientPageLabel" class="muted"></span>
+              <button id="clientNextPageButton" class="ghost small" type="button" data-i18n="pagination.next">Вперед</button>
+            </div>
+          </section>
+        </section>
+      </section>
+
+      <section class="page-view" data-page-view="endpoints">
+        <section class="panel endpoints-panel">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="endpoints.title">Endpoints и обход блокировок</h2>
+              <p class="muted panel-subtitle" data-i18n="endpoints.subtitle">Один ключ можно отдавать в подписке через несколько UDP endpoints: 443, 8443 или свой порт.</p>
+            </div>
+            <button id="checkEndpointsButton" class="ghost small" type="button"><span class="icon" data-icon="refresh"></span><span data-i18n="endpoints.check_all">Проверить endpoints</span></button>
+          </div>
+          <div id="endpointCards" class="endpoint-grid"></div>
+          <form id="endpointForm" class="endpoint-form">
+            <label>
+              <span data-i18n="endpoints.label">Название</span>
+              <input name="label" placeholder="Paris UDP 443" maxlength="80" required>
+            </label>
+            <label>
+              <span>Endpoint</span>
+              <input name="endpoint" placeholder="paris1.example.com:443" required>
+            </label>
+            <label>
+              <span data-i18n="endpoints.priority">Приоритет</span>
+              <input name="priority" type="number" min="1" max="9999" step="1" value="100">
+            </label>
+            <label>
+              <span>MTU</span>
+              <input name="mtu" type="number" min="1200" max="1500" step="1" value="1280">
+            </label>
+            <label>
+              <span>Keepalive</span>
+              <input name="persistentKeepalive" type="number" min="0" max="120" step="1" value="15">
+            </label>
+            <label class="check-row">
+              <input name="enabled" type="checkbox" checked>
+              <span data-i18n="endpoints.enabled_in_subscriptions">Включить в подписки</span>
+            </label>
+            <button class="primary" type="submit"><span data-i18n="endpoints.add">Добавить endpoint</span></button>
+            <p id="endpointError" class="form-error" hidden></p>
+          </form>
+        </section>
+      </section>
+
+      <section class="page-view" data-page-view="balancer">
+        <section class="status-grid balancer-metrics" aria-label="Balancer status">
+          <div class="metric">
+            <span data-i18n="balancer.strategy">Стратегия</span>
+            <strong id="balancerStrategyMetric">-</strong>
+          </div>
+          <div class="metric">
+            <span data-i18n="balancer.nodes">Узлы</span>
+            <strong id="balancerNodesMetric">0</strong>
+          </div>
+          <div class="metric">
+            <span data-i18n="balancer.local_clients">Локальные клиенты</span>
+            <strong id="balancerLocalClientsMetric">0</strong>
+          </div>
+          <div class="metric">
+            <span data-i18n="balancer.best_node">Лучший узел</span>
+            <strong id="balancerBestNodeMetric">-</strong>
+          </div>
+        </section>
+
+        <section class="panel balancer-panel">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="balancer.title">Балансировка серверов</h2>
+              <p class="muted panel-subtitle" data-i18n="balancer.subtitle">Добавьте другие панели jamanWG как узлы. Сайт может вызывать /api/v1/balancer/allocate, и панель выберет менее загруженный сервер.</p>
+            </div>
+            <button id="checkBalancerButton" class="ghost small" type="button"><span class="icon" data-icon="refresh"></span><span data-i18n="balancer.check_all">Проверить узлы</span></button>
+          </div>
+          <div id="balancerNodeCards" class="endpoint-grid"></div>
+          <form id="balancerNodeForm" class="balancer-form">
+            <label>
+              <span data-i18n="balancer.node_name">Название</span>
+              <input name="name" placeholder="Paris 1" maxlength="80" required>
+            </label>
+            <label>
+              <span data-i18n="balancer.api_url">API URL</span>
+              <input name="apiUrl" placeholder="https://panel.example.com" required>
+            </label>
+            <label>
+              <span data-i18n="balancer.api_token">API token</span>
+              <input name="apiToken" class="mono" placeholder="jwg_..." required>
+            </label>
+            <label>
+              <span data-i18n="balancer.group">Группа</span>
+              <input name="groupName" value="default" maxlength="60" required>
+            </label>
+            <label>
+              <span data-i18n="balancer.weight">Вес</span>
+              <input name="weight" type="number" min="1" max="1000" step="1" value="100">
+            </label>
+            <label>
+              <span data-i18n="balancer.max_clients">Макс. клиентов</span>
+              <input name="maxClients" type="number" min="0" step="1" placeholder="500">
+            </label>
+            <label>
+              <span data-i18n="balancer.max_traffic">Макс. трафик, GB</span>
+              <input name="maxTrafficGb" type="number" min="0" step="1" placeholder="2000">
+            </label>
+            <label class="check-row">
+              <input name="enabled" type="checkbox" checked>
+              <span data-i18n="actions.enable">Включить</span>
+            </label>
+            <button class="primary" type="submit"><span data-i18n="balancer.add_node">Добавить узел</span></button>
+            <p id="balancerError" class="form-error" hidden></p>
+          </form>
+        </section>
+      </section>
+
+      <section class="page-view" data-page-view="events">
+        <section class="panel events-panel">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="events.title">Журнал</h2>
+              <p id="eventsCountLabel" class="muted panel-subtitle" data-i18n="events.subtitle">Последние события панели, клиентов и HWID.</p>
+            </div>
+            <div class="client-tools">
+              <select id="eventsPageSizeSelect" aria-label="Событий на странице">
+                <option value="40">40</option>
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+              </select>
+              <button id="eventsRefreshButton" class="ghost small" type="button"><span class="icon" data-icon="refresh"></span><span data-i18n="actions.refresh">Обновить</span></button>
+            </div>
+          </div>
+          <div id="eventsList" class="events-list"></div>
+          <div id="eventsPagination" class="pagination-bar" hidden>
+            <button id="eventsPrevPageButton" class="ghost small" type="button" data-i18n="pagination.prev">Назад</button>
+            <span id="eventsPageLabel" class="muted"></span>
+            <button id="eventsNextPageButton" class="ghost small" type="button" data-i18n="pagination.next">Вперед</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="page-view" data-page-view="settings">
+        <section id="settingsPanel" class="panel settings-panel">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="settings.title">Настройки панели</h2>
+              <p class="muted panel-subtitle" data-i18n="settings.subtitle">Логин, пароль, API-токен для внешних интеграций и сервисные действия.</p>
+            </div>
+            <button id="restartButton" class="ghost danger small" type="button"><span class="icon" data-icon="power"></span><span data-i18n="settings.restart">Перезапустить панель</span></button>
+          </div>
+
+          <div class="settings-grid">
+            <div class="settings-card">
+              <label>
+                <span data-i18n="settings.api_token">API token для внешних интеграций</span>
+                <input id="apiTokenOutput" class="mono" readonly>
+              </label>
+              <div class="button-row">
+                <button id="copyApiTokenButton" class="ghost small" type="button"><span class="icon" data-icon="copy"></span><span data-i18n="actions.copy">Скопировать</span></button>
+                <button id="regenerateApiTokenButton" class="ghost danger small" type="button"><span class="icon" data-icon="refresh"></span><span data-i18n="settings.regenerate">Перегенерировать</span></button>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <div>
+                <span class="field-title" data-i18n="settings.compat_app">Совместимое приложение</span>
+                <p class="muted panel-subtitle" data-i18n="settings.compat_desc">HayVon может импортировать AmneziaWG-конфиги из jamanWG по файлу, ссылке или deeplink.</p>
+              </div>
+              <div class="button-row">
+                <a class="ghost small link-button" href="#" aria-disabled="true"><span class="icon" data-icon="app"></span>macOS</a>
+                <a class="ghost small link-button" href="#" aria-disabled="true"><span class="icon" data-icon="app"></span>iOS</a>
+                <a class="ghost small link-button" href="#" aria-disabled="true"><span class="icon" data-icon="app"></span>Android</a>
+              </div>
+            </div>
+
+            <form id="settingsForm" class="settings-card">
+              <label>
+                <span data-i18n="settings.admin_login">Логин администратора</span>
+                <input name="adminUsername" autocomplete="username" required>
+              </label>
+              <label>
+                <span data-i18n="settings.current_password">Текущий пароль</span>
+                <input name="currentPassword" type="password" autocomplete="current-password" data-i18n-placeholder="settings.current_password_placeholder" placeholder="Нужен для смены логина/пароля">
+              </label>
+              <label>
+                <span data-i18n="settings.new_password">Новый пароль</span>
+                <input name="newPassword" type="password" autocomplete="new-password" data-i18n-placeholder="settings.new_password_placeholder" placeholder="Минимум 10 символов">
+              </label>
+              <button class="primary" type="submit"><span data-i18n="settings.save">Сохранить настройки</span></button>
+              <p id="settingsError" class="form-error" hidden></p>
+            </form>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="configDialog">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow" data-i18n="dialog.client_config">Client config</p>
+          <h2 id="dialogTitle">Конфиг</h2>
+        </div>
+        <button id="closeDialogButton" class="ghost small" type="button"><span class="icon" data-icon="close"></span><span data-i18n="actions.close">Закрыть</span></button>
+      </div>
+      <div class="dialog-grid">
+        <pre id="configOutput"></pre>
+        <div class="qr-box">
+          <img id="qrImage" alt="QR config">
+          <p id="qrHint"></p>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button id="openAppButton" class="primary" type="button"><span class="icon" data-icon="app"></span><span data-i18n="dialog.open_app">Открыть в HayVon</span></button>
+        <button id="copyLinkButton" class="ghost" type="button"><span class="icon" data-icon="link"></span><span data-i18n="dialog.copy_link">Скопировать ссылку</span></button>
+        <button id="copySubscriptionButton" class="ghost" type="button"><span class="icon" data-icon="sync"></span><span data-i18n="dialog.copy_subscription">Скопировать все endpoints</span></button>
+        <button id="copyConfigButton" class="ghost" type="button"><span class="icon" data-icon="copy"></span><span data-i18n="dialog.copy_conf">Скопировать .conf</span></button>
+        <a id="downloadConfigLink" class="ghost link-button" href="#"><span class="icon" data-icon="download"></span><span data-i18n="dialog.download_conf">Скачать .conf</span></a>
+      </div>
+    </dialog>
+
+    <dialog id="devicesDialog">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">HWID devices</p>
+          <h2 id="devicesDialogTitle">Устройства</h2>
+        </div>
+        <button id="closeDevicesDialogButton" class="ghost small" type="button"><span class="icon" data-icon="close"></span><span data-i18n="actions.close">Закрыть</span></button>
+      </div>
+      <div class="devices-list" id="devicesList"></div>
+    </dialog>
+
+    <div id="toast" class="toast" hidden></div>
+    <script src="/app.js?v=20260530-1" type="module"></script>
+  </body>
+</html>

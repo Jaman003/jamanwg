@@ -293,7 +293,7 @@ const translations = {
     'settings.api_token': 'API token для внешних интеграций',
     'settings.regenerate': 'Перегенерировать',
     'settings.compat_app': 'Совместимое приложение',
-    'settings.compat_desc': 'HayVon может импортировать AmneziaWG-конфиги из jamanWG по файлу, ссылке или deeplink.',
+    'settings.compat_desc': 'HayVon может подключаться к jamanWG по URL панели и API token, чтобы загрузить созданные клиентские конфигурации.',
     'settings.admin_login': 'Логин администратора',
     'settings.current_password': 'Текущий пароль',
     'settings.current_password_placeholder': 'Нужен для смены логина/пароля',
@@ -523,7 +523,7 @@ const translations = {
     'settings.api_token': 'API token for external integrations',
     'settings.regenerate': 'Regenerate',
     'settings.compat_app': 'Compatible app',
-    'settings.compat_desc': 'HayVon can import AmneziaWG configs from jamanWG by file, link, or deeplink.',
+    'settings.compat_desc': 'HayVon can connect to jamanWG by panel URL and API token, then load created client configurations.',
     'settings.admin_login': 'Admin username',
     'settings.current_password': 'Current password',
     'settings.current_password_placeholder': 'Required to change login/password',
@@ -753,7 +753,7 @@ const translations = {
     'settings.api_token': 'API token برای اتصال های خارجی',
     'settings.regenerate': 'ساخت دوباره',
     'settings.compat_app': 'اپلیکیشن سازگار',
-    'settings.compat_desc': 'HayVon می تواند کانفیگ های AmneziaWG را از jamanWG با فایل، لینک یا deeplink وارد کند.',
+    'settings.compat_desc': 'HayVon می تواند با URL پنل و API token به jamanWG وصل شود و کانفیگ های کاربران را بارگیری کند.',
     'settings.admin_login': 'نام کاربری مدیر',
     'settings.current_password': 'رمز عبور فعلی',
     'settings.current_password_placeholder': 'برای تغییر نام کاربری یا رمز عبور لازم است',
@@ -983,7 +983,7 @@ const translations = {
     'settings.api_token': '外部集成 API token',
     'settings.regenerate': '重新生成',
     'settings.compat_app': '兼容应用',
-    'settings.compat_desc': 'HayVon 可以通过文件、链接或 deeplink 导入 jamanWG 的 AmneziaWG 配置。',
+    'settings.compat_desc': 'HayVon 可以通过面板 URL 和 API token 连接 jamanWG，并加载已创建的客户端配置。',
     'settings.admin_login': '管理员用户名',
     'settings.current_password': '当前密码',
     'settings.current_password_placeholder': '修改登录名/密码时需要',
@@ -1570,7 +1570,7 @@ function buildAmneziaLink(configText, client) {
   return `amneziawg://${payload}#${name}`;
 }
 
-function buildHayVonDeepLink(appLink) {
+function buildHayVonImportUrl(appLink) {
   return `hayvonapp://import?url=${encodeURIComponent(appLink)}`;
 }
 
@@ -1590,7 +1590,7 @@ async function openClientInApp(id) {
   const configText = await fetchClientConfig(id);
   const appLink = buildAmneziaLink(configText, client);
   await writeClipboard(appLink).catch(() => null);
-  window.location.href = buildHayVonDeepLink(appLink);
+  window.location.href = buildHayVonImportUrl(appLink);
   showToast(t('toast.link_to_app'));
 }
 
@@ -2512,7 +2512,7 @@ el.copySubscriptionButton.addEventListener('click', async () => {
 el.openAppButton.addEventListener('click', async () => {
   if (!state.selectedAppLink) return;
   await writeClipboard(state.selectedAppLink).catch(() => null);
-  window.location.href = buildHayVonDeepLink(state.selectedAppLink);
+  window.location.href = buildHayVonImportUrl(state.selectedAppLink);
   showToast(t('toast.opening_app'));
 });
 

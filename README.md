@@ -315,8 +315,8 @@ next to the user's account or billing record.
 
 The admin UI contains placeholder links for HayVon builds. Replace the
 `href="#"` values in `public/index.html` with your public download pages when
-you publish the app links. HayVon accepts `hayvonapp://import?url=...` deep
-links for importing a JamanWG-issued `amneziawg://` configuration entry.
+you publish the app links. HayVon can also connect to a JamanWG panel by panel
+URL and API token, then load the issued WireGuard and AmneziaWG client entries.
 
 ## Security notes
 

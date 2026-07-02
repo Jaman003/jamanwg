@@ -264,7 +264,7 @@ function defaultClientEndpoint() {
   return endpointString(activeEndpointProfiles()[0]);
 }
 
-async function renderClientSubscription(client) {
+async function renderClientBundle(client) {
   const entries = [];
   for (const endpoint of activeEndpointProfiles()) {
     const configText = await renderClientConfig(client, endpoint);
@@ -279,7 +279,7 @@ async function renderClientSubscription(client) {
 
   return {
     entries,
-    subscription: entries.map((entry) => entry.uri).join('\n')
+    bundle: entries.map((entry) => entry.uri).join('\n')
   };
 }
 
@@ -617,15 +617,15 @@ async function allocateBalancedClient(body) {
 
   if (selection.selected.type === 'local') {
     const result = await createClient(payload);
-    const subscription = await renderClientSubscription(result.client);
+    const bundle = await renderClientBundle(result.client);
     return {
       placement: 'local',
       node: publicBalancerNode(localBalanceNode()),
       candidates: selection.candidates,
       client: publicClient(result.client),
       config: await renderClientConfig(result.client),
-      subscription: subscription.subscription,
-      entries: subscription.entries,
+      bundle: bundle.bundle,
+      entries: bundle.entries,
       sync: result.sync,
       syncWarning: result.syncWarning
     };
@@ -1002,10 +1002,10 @@ async function handleAdminApi(req, res, url) {
       return;
     }
 
-    if (req.method === 'GET' && action === 'subscription') {
-      const payload = await renderClientSubscription(client);
+    if (req.method === 'GET' && action === 'bundle') {
+      const payload = await renderClientBundle(client);
       if (url.searchParams.get('format') === 'raw') {
-        send(res, 200, payload.subscription, {
+        send(res, 200, payload.bundle, {
           'Content-Type': 'text/plain; charset=utf-8',
           'Content-Disposition': `attachment; filename="${client.name.replace(/[^a-z0-9_-]+/gi, '_')}.txt"`
         });
@@ -1210,7 +1210,7 @@ async function handleWebsiteApi(req, res, url) {
       return;
     }
 
-    if (req.method === 'GET' && action === 'subscription') {
+    if (req.method === 'GET' && action === 'bundle') {
       const hwid = url.searchParams.get('hwid') || req.headers['x-device-hwid'];
       if (hwid) {
         authorizeClientHwid(client, {
@@ -1219,9 +1219,9 @@ async function handleWebsiteApi(req, res, url) {
         }, req);
       }
       const freshClient = getClient(id);
-      const payload = await renderClientSubscription(freshClient);
+      const payload = await renderClientBundle(freshClient);
       if (url.searchParams.get('format') === 'raw') {
-        send(res, 200, payload.subscription, {
+        send(res, 200, payload.bundle, {
           'Content-Type': 'text/plain; charset=utf-8',
           'Content-Disposition': `attachment; filename="${freshClient.name.replace(/[^a-z0-9_-]+/gi, '_')}.txt"`
         });

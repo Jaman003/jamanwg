@@ -106,7 +106,7 @@ const el = {
   closeDialogButton: document.querySelector('#closeDialogButton'),
   openAppButton: document.querySelector('#openAppButton'),
   copyLinkButton: document.querySelector('#copyLinkButton'),
-  copySubscriptionButton: document.querySelector('#copySubscriptionButton'),
+  copyBundleButton: document.querySelector('#copyBundleButton'),
   copyConfigButton: document.querySelector('#copyConfigButton'),
   downloadConfigLink: document.querySelector('#downloadConfigLink'),
   devicesDialog: document.querySelector('#devicesDialog'),
@@ -208,15 +208,15 @@ const translations = {
     'table.status': 'Статус',
     'table.traffic': 'Трафик',
     'endpoints.title': 'Endpoints и обход блокировок',
-    'endpoints.subtitle': 'Один ключ можно отдавать в подписке через несколько UDP endpoints: 443, 8443 или свой порт.',
+    'endpoints.subtitle': 'Один ключ можно отдавать через несколько UDP endpoints: 443, 8443 или свой порт.',
     'endpoints.check_all': 'Проверить endpoints',
     'endpoints.label': 'Название',
     'endpoints.priority': 'Приоритет',
-    'endpoints.enabled_in_subscriptions': 'Включить в подписки',
+    'endpoints.enabled_in_bundles': 'Включить в набор endpoints',
     'endpoints.add': 'Добавить endpoint',
     'endpoints.empty': 'Endpoints пока не созданы.',
     'endpoints.not_checked': 'не проверен',
-    'endpoints.in_subscriptions': 'в подписках',
+    'endpoints.in_bundles': 'в наборе',
     'endpoints.off': 'выключен',
     'balancer.title': 'Балансировка серверов',
     'balancer.subtitle': 'Добавьте другие панели jamanWG как узлы. Сайт может вызывать /api/v1/balancer/allocate, и панель выберет менее загруженный сервер.',
@@ -310,7 +310,7 @@ const translations = {
     'dialog.config': 'Конфиг',
     'dialog.open_app': 'Открыть в HayVon',
     'dialog.copy_link': 'Скопировать ссылку',
-    'dialog.copy_subscription': 'Скопировать все endpoints',
+    'dialog.copy_bundle': 'Скопировать все endpoints',
     'dialog.copy_conf': 'Скопировать .conf',
     'dialog.download_conf': 'Скачать .conf',
     'dialog.qr_available': 'QR доступен, если на сервере установлен qrencode.',
@@ -347,7 +347,7 @@ const translations = {
     'toast.hwid_revoked': 'HWID отозван',
     'toast.config_copied': 'Конфиг скопирован',
     'toast.link_copied': 'Ссылка для HayVon скопирована',
-    'toast.subscription_copied': 'Подписка со всеми endpoints скопирована',
+    'toast.bundle_copied': 'Набор endpoints скопирован',
     'toast.opening_app': 'Открываю HayVon',
     'confirm.reissue': 'Перевыпустить ключи для "{name}"? Старый конфиг перестанет работать после синхронизации.',
     'confirm.delete_client': 'Удалить клиента "{name}"?',
@@ -446,11 +446,11 @@ const translations = {
     'endpoints.check_all': 'Check endpoints',
     'endpoints.label': 'Label',
     'endpoints.priority': 'Priority',
-    'endpoints.enabled_in_subscriptions': 'Include in subscriptions',
+    'endpoints.enabled_in_bundles': 'Include in endpoint bundle',
     'endpoints.add': 'Add endpoint',
     'endpoints.empty': 'No endpoints yet.',
     'endpoints.not_checked': 'not checked',
-    'endpoints.in_subscriptions': 'in subscriptions',
+    'endpoints.in_bundles': 'in bundle',
     'endpoints.off': 'off',
     'balancer.title': 'Server balancing',
     'balancer.subtitle': 'Add other jamanWG panels as nodes. Your site can call /api/v1/balancer/allocate and the panel will choose the least loaded server.',
@@ -544,7 +544,7 @@ const translations = {
     'dialog.config': 'Config',
     'dialog.open_app': 'Open in HayVon',
     'dialog.copy_link': 'Copy link',
-    'dialog.copy_subscription': 'Copy all endpoints',
+    'dialog.copy_bundle': 'Copy all endpoints',
     'dialog.copy_conf': 'Copy .conf',
     'dialog.download_conf': 'Download .conf',
     'dialog.qr_available': 'QR is available when qrencode is installed on the server.',
@@ -581,7 +581,7 @@ const translations = {
     'toast.hwid_revoked': 'HWID revoked',
     'toast.config_copied': 'Config copied',
     'toast.link_copied': 'HayVon link copied',
-    'toast.subscription_copied': 'Subscription with all endpoints copied',
+    'toast.bundle_copied': 'Bundle with all endpoints copied',
     'toast.opening_app': 'Opening HayVon',
     'confirm.reissue': 'Reissue keys for "{name}"? The old config will stop working after sync.',
     'confirm.delete_client': 'Delete client "{name}"?',
@@ -680,11 +680,11 @@ const translations = {
     'endpoints.check_all': 'بررسی endpoints',
     'endpoints.label': 'نام',
     'endpoints.priority': 'اولویت',
-    'endpoints.enabled_in_subscriptions': 'افزودن به اشتراک ها',
+    'endpoints.enabled_in_bundles': 'افزودن به بسته endpoint',
     'endpoints.add': 'افزودن endpoint',
     'endpoints.empty': 'هنوز endpoint ساخته نشده است.',
     'endpoints.not_checked': 'بررسی نشده',
-    'endpoints.in_subscriptions': 'در اشتراک ها',
+    'endpoints.in_bundles': 'در بسته',
     'endpoints.off': 'خاموش',
     'balancer.title': 'متعادل سازی سرورها',
     'balancer.subtitle': 'پنل های jamanWG دیگر را به عنوان node اضافه کنید. سایت می تواند /api/v1/balancer/allocate را فراخوانی کند و پنل کم بارترین سرور را انتخاب می کند.',
@@ -778,7 +778,7 @@ const translations = {
     'dialog.config': 'کانفیگ',
     'dialog.open_app': 'باز کردن در HayVon',
     'dialog.copy_link': 'کپی لینک',
-    'dialog.copy_subscription': 'کپی همه endpoints',
+    'dialog.copy_bundle': 'کپی همه endpoints',
     'dialog.copy_conf': 'کپی .conf',
     'dialog.download_conf': 'دانلود .conf',
     'dialog.qr_available': 'QR زمانی در دسترس است که qrencode روی سرور نصب باشد.',
@@ -815,7 +815,7 @@ const translations = {
     'toast.hwid_revoked': 'HWID لغو شد',
     'toast.config_copied': 'کانفیگ کپی شد',
     'toast.link_copied': 'لینک HayVon کپی شد',
-    'toast.subscription_copied': 'اشتراک با همه endpoints کپی شد',
+    'toast.bundle_copied': 'بسته endpoints کپی شد',
     'toast.opening_app': 'در حال باز کردن HayVon',
     'confirm.reissue': 'کلیدهای "{name}" دوباره صادر شوند؟ کانفیگ قدیمی بعد از همگام سازی کار نخواهد کرد.',
     'confirm.delete_client': 'کاربر "{name}" حذف شود؟',
@@ -914,11 +914,11 @@ const translations = {
     'endpoints.check_all': '检查 endpoints',
     'endpoints.label': '名称',
     'endpoints.priority': '优先级',
-    'endpoints.enabled_in_subscriptions': '加入订阅',
+    'endpoints.enabled_in_bundles': '加入端点包',
     'endpoints.add': '添加 endpoint',
     'endpoints.empty': '还没有 endpoints。',
     'endpoints.not_checked': '未检查',
-    'endpoints.in_subscriptions': '在订阅中',
+    'endpoints.in_bundles': '在端点包中',
     'endpoints.off': '关闭',
     'balancer.title': '服务器负载均衡',
     'balancer.subtitle': '将其他 jamanWG 面板添加为节点。站点可调用 /api/v1/balancer/allocate，面板会选择负载最低的服务器。',
@@ -1012,7 +1012,7 @@ const translations = {
     'dialog.config': '配置',
     'dialog.open_app': '在 HayVon 打开',
     'dialog.copy_link': '复制链接',
-    'dialog.copy_subscription': '复制全部 endpoints',
+    'dialog.copy_bundle': '复制全部 endpoints',
     'dialog.copy_conf': '复制 .conf',
     'dialog.download_conf': '下载 .conf',
     'dialog.qr_available': '服务器安装 qrencode 后可生成 QR。',
@@ -1049,7 +1049,7 @@ const translations = {
     'toast.hwid_revoked': 'HWID 已撤销',
     'toast.config_copied': '配置已复制',
     'toast.link_copied': 'HayVon 链接已复制',
-    'toast.subscription_copied': '包含全部 endpoints 的订阅已复制',
+    'toast.bundle_copied': '包含全部 endpoints 的端点包已复制',
     'toast.opening_app': '正在打开 HayVon',
     'confirm.reissue': '重新签发 "{name}" 的密钥？同步后旧配置将停止工作。',
     'confirm.delete_client': '删除客户端 "{name}"？',
@@ -1282,7 +1282,7 @@ function endpointStatusLabel(endpoint) {
 
 function endpointHint(endpoint) {
   const parts = [
-    endpoint.enabled ? t('endpoints.in_subscriptions') : t('endpoints.off'),
+    endpoint.enabled ? t('endpoints.in_bundles') : t('endpoints.off'),
     `priority ${endpoint.priority}`,
     `MTU ${endpoint.mtu || '-'}`,
     `keepalive ${endpoint.persistentKeepalive ?? '-'}`
@@ -1608,8 +1608,8 @@ async function fetchClientConfig(id) {
   });
 }
 
-async function fetchClientSubscription(id) {
-  return api(`/api/clients/${id}/subscription`);
+async function fetchClientBundle(id) {
+  return api(`/api/clients/${id}/bundle`);
 }
 
 async function openClientInApp(id) {
@@ -2539,11 +2539,11 @@ el.copyLinkButton.addEventListener('click', async () => {
   showToast(t('toast.link_copied'));
 });
 
-el.copySubscriptionButton.addEventListener('click', async () => {
+el.copyBundleButton.addEventListener('click', async () => {
   if (!state.selectedClient?.id) return;
-  const payload = await fetchClientSubscription(state.selectedClient.id);
-  await writeClipboard(payload.subscription || '');
-  showToast(t('toast.subscription_copied'));
+  const payload = await fetchClientBundle(state.selectedClient.id);
+  await writeClipboard(payload.bundle || '');
+  showToast(t('toast.bundle_copied'));
 });
 
 el.openAppButton.addEventListener('click', async () => {

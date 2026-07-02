@@ -121,7 +121,7 @@ export function balancerSnapshot() {
     strategy: 'weighted-least-loaded',
     local,
     nodes,
-    assignmentsHint: 'Use POST /api/v1/balancer/allocate from your billing or subscription backend.'
+    assignmentsHint: 'Use POST /api/v1/balancer/allocate from your external backend.'
   };
 }
 
@@ -218,9 +218,9 @@ export async function createRemoteClient(node, payload) {
   });
 
   const remoteClient = created.client;
-  let subscription = null;
+  let bundle = null;
   if (remoteClient?.id) {
-    subscription = await requestNodeJson(node, `/api/v1/clients/${encodeURIComponent(remoteClient.id)}/subscription`)
+    bundle = await requestNodeJson(node, `/api/v1/clients/${encodeURIComponent(remoteClient.id)}/bundle`)
       .catch(() => null);
   }
 
@@ -237,22 +237,22 @@ export async function createRemoteClient(node, payload) {
     assignment,
     client: remoteClient,
     config: created.config,
-    subscription: subscription?.subscription || null,
-    entries: subscription?.entries || []
+    bundle: bundle?.bundle || null,
+    entries: bundle?.entries || []
   };
 }
 
 export async function getAssignmentClient(assignmentId) {
   const { assignment, node } = loadRemoteAssignment(assignmentId);
   const payload = await requestNodeJson(node, `/api/v1/clients/${encodeURIComponent(assignment.remoteClientId)}`);
-  const subscription = await requestNodeJson(node, `/api/v1/clients/${encodeURIComponent(assignment.remoteClientId)}/subscription`)
+  const bundle = await requestNodeJson(node, `/api/v1/clients/${encodeURIComponent(assignment.remoteClientId)}/bundle`)
     .catch(() => null);
   return {
     node: publicBalancerNode(node),
     assignment,
     client: payload.client || null,
-    subscription: subscription?.subscription || null,
-    entries: subscription?.entries || []
+    bundle: bundle?.bundle || null,
+    entries: bundle?.entries || []
   };
 }
 
@@ -262,15 +262,15 @@ export async function updateAssignmentClient(assignmentId, patch) {
     method: 'PATCH',
     body: JSON.stringify(patch)
   });
-  const subscription = await requestNodeJson(node, `/api/v1/clients/${encodeURIComponent(assignment.remoteClientId)}/subscription`)
+  const bundle = await requestNodeJson(node, `/api/v1/clients/${encodeURIComponent(assignment.remoteClientId)}/bundle`)
     .catch(() => null);
   return {
     node: publicBalancerNode(node),
     assignment,
     client: payload.client || null,
     config: payload.config,
-    subscription: subscription?.subscription || null,
-    entries: subscription?.entries || [],
+    bundle: bundle?.bundle || null,
+    entries: bundle?.entries || [],
     sync: payload.sync
   };
 }

@@ -69,9 +69,9 @@ const created = await request('/api/clients', {
 assert.ok(created.client.id);
 assert.match(created.config, /\[Interface\]/);
 
-const subscription = await request(`/api/clients/${created.client.id}/subscription`);
-assert.ok(subscription.entries.length >= 1);
-assert.match(subscription.subscription, /amneziawg:\/\//);
+const bundle = await request(`/api/clients/${created.client.id}/bundle`);
+assert.ok(bundle.entries.length >= 1);
+assert.match(bundle.bundle, /amneziawg:\/\//);
 
 const list = await request('/api/clients');
 assert.ok(list.clients.some((client) => client.id === created.client.id));

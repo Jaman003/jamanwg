@@ -13,7 +13,7 @@ It manages the AmneziaWG interface directly through `awg` and writes an
 - Panel restart action through `JAMANWG_RESTART_COMMAND`
 - Client key reissue
 - HWID/device slots API for app-side device binding
-- Multi-endpoint subscriptions for fallback ports such as UDP 443/8443
+- Multi-endpoint bundles for fallback ports such as UDP 443/8443
 - Endpoint health checks from the admin panel
 - Weighted least-loaded balancer for distributing users between jamanWG nodes
 - `/22` address pool by default, enough for about 1021 client slots per node
@@ -191,14 +191,14 @@ curl http://127.0.0.1:8787/api/v1/clients/<client-id>/config \
 Get all active endpoint links for one client:
 
 ```bash
-curl http://127.0.0.1:8787/api/v1/clients/<client-id>/subscription \
+curl http://127.0.0.1:8787/api/v1/clients/<client-id>/bundle \
   -H "Authorization: Bearer replace-with-api-token"
 ```
 
-For a plain subscription body:
+For a plain bundle body:
 
 ```bash
-curl "http://127.0.0.1:8787/api/v1/clients/<client-id>/subscription?format=raw" \
+curl "http://127.0.0.1:8787/api/v1/clients/<client-id>/bundle?format=raw" \
   -H "Authorization: Bearer replace-with-api-token"
 ```
 
@@ -234,7 +234,7 @@ curl -X POST http://127.0.0.1:8787/api/v1/balancer/allocate \
 The balancer uses a weighted least-loaded strategy. It ignores disabled nodes,
 nodes marked as down, nodes that reached `maxClients`, and nodes that reached
 `maxTrafficBytes`. When no remote node is better than the local panel, it
-creates the client locally and returns the same `config` and `subscription`
+creates the client locally and returns the same `config` and `bundle`
 shape.
 
 Update client:
@@ -286,30 +286,30 @@ curl -X DELETE http://127.0.0.1:8787/api/v1/clients/<client-id> \
   -H "Authorization: Bearer replace-with-api-token"
 ```
 
-## Subscription integration
+## Bundle integration
 
-Any website, bot, billing system, or subscription backend can provision clients
-through this API and store AmneziaWG configs as one-line subscription entries:
+Any website, bot, or external automation can provision clients
+through this API and store AmneziaWG configs as one-line bundle entries:
 
 ```text
 amneziawg://<base64url-client-conf>#<server-name>
 ```
 
-That line can be merged into a base64 subscription response for your own
+That line can be merged into a base64 bundle response for your own
 customer portal or automation backend. Client apps must decode the base64url
 payload after `amneziawg://` back into the original AmneziaWG `.conf`.
 
 jamanWG can now return several entries for the same client through
-`/api/v1/clients/<client-id>/subscription`. Each entry uses the same client keys
-but a different panel endpoint. This lets your subscription backend add a new
-fallback port or domain in jamanWG and then sync user subscriptions without
+`/api/v1/clients/<client-id>/bundle`. Each entry uses the same client keys
+but a different panel endpoint. This lets your external automation add a new
+fallback port or domain in jamanWG and then sync user bundles without
 reissuing all client keys.
 
 For multiple physical servers, add each server's jamanWG panel in the
 `Balancer` page. Your website should call `/api/v1/balancer/allocate` instead
 of choosing a panel itself. The response contains the selected node, created
-client, generated config, and subscription body, so the website can store them
-next to the user's account or billing record.
+client, generated config, and bundle body, so the website can store them
+next to the user's account or external account record.
 
 ## Client app links
 
@@ -330,4 +330,4 @@ panel using the visible API token.
 - Back up `data/jamanwg.sqlite`; it contains client private keys.
 - HWID limits require the client app/site to request configs through
   `/hwid/authorize`. If you expose the raw `.conf` or `amneziawg://...` line
-  directly in a subscription, AmneziaWG itself cannot know the hardware ID.
+  directly in a bundle, AmneziaWG itself cannot know the hardware ID.

@@ -331,11 +331,3 @@ panel using the visible API token.
 - HWID limits require the client app/site to request configs through
   `/hwid/authorize`. If you expose the raw `.conf` or `amneziawg://...` line
   directly in a subscription, AmneziaWG itself cannot know the hardware ID.
-
-## Current MVP limits
-
-- jamanWG manages one AmneziaWG interface per panel instance. Use multiple
-  panel instances for multiple physical servers, then connect them through the
-  balancer.
-- Billing/payment logic belongs in your website/backend and should call the
-  jamanWG website API after successful payment.
